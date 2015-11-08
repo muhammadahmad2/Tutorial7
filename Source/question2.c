@@ -22,84 +22,90 @@ typedef struct queue{
 }node_t;
 
 node_t * head = NULL;
-void push(proc * process1){
-	proc * new_process = process1;
-    new_process = malloc(sizeof(proc));
-/*
-	if (head == NULL) {
-		node_t * new_node;
-		new_node = malloc(sizeof(node_t));
-
-	    new_node->process = new_process;
-	    new_node->next = NULL;
-	    head = new_node; 
-	}
-	else {
-		node_t * new_node;
-		new_node = malloc(sizeof(node_t));
-
-	    new_node->process = new_process;
-	    new_node->next = head;
-	    head = new_node; 
-	}
-*/
+void push(proc * process){
+	proc * new_process = process;
+	node_t *new_node = malloc(sizeof(node_t));
+	new_node->process = new_process;
+	new_node->next = NULL;
 
 	if (head == NULL) {
-		node_t * new_node;
-		new_node = malloc(sizeof(node_t));
-	    new_node->process = new_process;
-	    new_node->next = NULL;
 	    head = new_node;
 	}
 	else {
 		node_t * current = head;
-		//current = malloc(sizeof(node_t));
 	    while (current->next != NULL) {
 	        current = current->next;
 	    }
 	    
-	    current->next = malloc(sizeof(node_t));
-	    current->next->process = new_process;
-	    current->next->next = NULL;
+	    current->next = new_node;
 
 	}
 	
 }
 
-proc pop() {
-	/*
+proc* pop() {
+	
     node_t * next_node = NULL;
 
-    if (*head == NULL) {
+    if (head == NULL) {
         return NULL;
     }
 
-    next_node = (*head)->next;
-    node_t * retval = (*head)->val;
-    free(*head);
-    *head = next_node;
+    next_node = head->next;
+    proc * retval = head->process;
+    free(head);
+    head = next_node;
 
     return retval;
-    */
+    
+}
+
+proc* delete_name(char *name){
+	node_t * current = head;
+	node_t * temp_node = NULL;
+
+    while (current->next != NULL) {
+    	if (strcmp(current->next->process->name,name)==0) {
+    		temp_node = current->next;
+		    current->next = temp_node->next;
+		    free(temp_node);
+
+		    return current->process;
+    	}
+        current = current->next;
+    }
+    return NULL;	
+}
+
+proc* delete_pid(int pid){
+	node_t * current = head;
+	node_t * temp_node = NULL;
+
+    while (current->next != NULL) {
+    	if (current->next->process->pid == pid) {
+    		temp_node = current->next;
+		    current->next = temp_node->next;
+		    free(temp_node);
+
+		    return current->process;
+    	}
+        current = current->next;
+    }
+    return NULL;
 }
 
 void print_list(){//node_t * head) {
-    node_t * current = head;
-	proc * new_process = current->process;
-
-        //printf("%s,%d,%d,%d\n", new_process->name, new_process->priority, new_process->pid, new_process->runtime);
-    while (current != NULL) {
-    	new_process = current->process;
+    node_t * current = head;	
+	while (current != NULL) {
+		proc * new_process = current->process;
         printf("%s,%d,%d,%d\n", new_process->name, new_process->priority, new_process->pid, new_process->runtime);
         current = current->next;
     }
-    printf("123123123");
 }
 
 int main(void)
 {
 	
-	head = malloc(sizeof(node_t));
 
     const char *filename = "processes.txt";
     FILE *input_file = fopen( filename, "r" );
@@ -138,10 +144,16 @@ int main(void)
         fclose( input_file );
 
     }
-    print_list();
 
+    delete_name("emacs");
+    delete_pid(12235);
 
+    node_t * current = head;	
+	while (current != NULL) {
+		proc * new_process = pop();
+        printf("%s,%d,%d,%d\n", new_process->name, new_process->priority, new_process->pid, new_process->runtime);
+        current = current->next;
+    }
 
-
-
+	free(head);
 }
