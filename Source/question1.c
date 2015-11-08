@@ -45,7 +45,15 @@ void push(proc * process){
 
 void print_list(){
     node_t * current = head;
+<<<<<<< HEAD
     while (current != NULL) {
+=======
+	
+
+        //printf("%s,%d,%d,%d\n", current->process->name, current->process->priority, current->process->pid, current->process->runtime);
+    while (current != NULL) {
+    	//new_process = current->process;
+>>>>>>> 53db397e87570a03124fde7d401abb05d0313ae7
 		proc * new_process = current->process;
         printf("%s,%d,%d,%d\n", new_process->name, new_process->priority, new_process->pid, new_process->runtime);
         current = current->next;
@@ -54,6 +62,11 @@ void print_list(){
 
 int main(void)
 {
+<<<<<<< HEAD
+=======
+	
+	//head = malloc(sizeof(node_t));
+>>>>>>> 53db397e87570a03124fde7d401abb05d0313ae7
 
     const char *filename = "processes.txt";
     FILE *input_file = fopen( filename, "r" );
@@ -94,4 +107,8 @@ int main(void)
     }
     print_list();
 	free(head);
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> 53db397e87570a03124fde7d401abb05d0313ae7
