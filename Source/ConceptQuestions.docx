@@ -1,0 +1,38 @@
+Conceptual Questions
+1.	Signals are positive integers used to relay particular messages to processes. Each signal has a different message associated with it.
+
+2.	SIGSTOP - can be used along with the kill() function to relay a message to a process that tells the process to stop what it is doing, and wait until it receives another signal telling it to do something else.
+SIGCONT - can be used along with the kill() function to relay a message to a paused process that tells it to continue executing from where it left off when it received the SIGSTOP signal.
+SIGINT - can be used along with the kill() function to relay a message to a process that tells it to stop executing, and to exit or shut itself down.
+
+3.	The kill() function takes a certain process ID and a signal, and relays the signal to the process. The name ‘kill’ is a bit misleading because it sounds like all it does is shutdown a process, but that is just one of the many uses of the function. Really, it just relays a message to a process, which includes, but is not limited to, shutting it down.
+The waitpid() function takes a certain process ID, a pointer to store the process’ status in, and other options. The function waits for a change in the status of the process whose ID was supplied. It is commonly used to wait until a child process has finished executing, and to free the resources it used.
+
+4.	FIFO stands for ‘first-in-first-out’, which means that the first element to be added to the queue is always the first element to be removed from it. A linked list is a type of data structure that uses pointers to link nodes to other nodes, forming a chain or list. Linked lists have the advantage of being dynamic in terms of memory usage. Linked lists can be implemented with a FIFO structure, but could be used other ways too. For a FIFO type linked list, certain function that are required include:
+void append(struct ListNode *node) - takes a node and attaches it to the end of the linked list as the new tail
+struct ListNode* pop() – removes the head of the linked list and returns it
+
+5.	In C, a linked list would be implemented as a struct containing pointers to the head node, and tail node, and functions that allow nodes to be added and removed from the list. The node itself would be a struct containing a value of some type, and a pointer to another ListNode.
+
+struct ListNode {
+	DataType value;
+	ListNode *next;
+};
+struct LinkedList {
+	ListNode *head;
+	ListNode *tail;
+};
+
+
+To add nodes to the list: 
+Given ListNode *node:
+Set node->next to null
+Set *tail->next to node
+Set tail to node
+	To remove first node in the list:
+		Create ListNode *firstNode
+		Set firstNode->next to null
+		Set firstNode to *head
+		Set head to *head->next
+		Set *firstNode to null
+		Return firstNode
