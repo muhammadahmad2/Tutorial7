@@ -22,33 +22,13 @@ typedef struct queue{
 }node_t;
 
 node_t * head = NULL;
-void push(proc * process1){
-	proc * new_process = process1;
-    new_process = malloc(sizeof(proc));
-/*
-	if (head == NULL) {
-		node_t * new_node;
-		new_node = malloc(sizeof(node_t));
-
-	    new_node->process = new_process;
-	    new_node->next = NULL;
-	    head = new_node; 
-	}
-	else {
-		node_t * new_node;
-		new_node = malloc(sizeof(node_t));
-
-	    new_node->process = new_process;
-	    new_node->next = head;
-	    head = new_node; 
-	}
-*/
+void push(proc * process){
+	proc * new_process = process;
+	node_t *new_node = malloc(sizeof(node_t));
+	new_node->process = new_process;
+	new_node->next = NULL;
 
 	if (head == NULL) {
-		node_t * new_node;
-		new_node = malloc(sizeof(node_t));
-	    new_node->process = new_process;
-	    new_node->next = NULL;
 	    head = new_node;
 	}
 	else {
@@ -58,9 +38,7 @@ void push(proc * process1){
 	        current = current->next;
 	    }
 	    
-	    current->next = malloc(sizeof(node_t));
-	    current->next->process = new_process;
-	    current->next->next = NULL;
+	    current->next = new_node;
 
 	}
 	
@@ -68,21 +46,21 @@ void push(proc * process1){
 
 void print_list(){//node_t * head) {
     node_t * current = head;
-	proc * new_process = current->process;
+	
 
-        //printf("%s,%d,%d,%d\n", new_process->name, new_process->priority, new_process->pid, new_process->runtime);
+        //printf("%s,%d,%d,%d\n", current->process->name, current->process->priority, current->process->pid, current->process->runtime);
     while (current != NULL) {
-    	new_process = current->process;
+    	//new_process = current->process;
+		proc * new_process = current->process;
         printf("%s,%d,%d,%d\n", new_process->name, new_process->priority, new_process->pid, new_process->runtime);
         current = current->next;
     }
-    printf("123123123");
 }
 
 int main(void)
 {
 	
-	head = malloc(sizeof(node_t));
+	//head = malloc(sizeof(node_t));
 
     const char *filename = "processes.txt";
     FILE *input_file = fopen( filename, "r" );
@@ -122,9 +100,5 @@ int main(void)
 
     }
     print_list();
-
-
-
-
-
+	free(head);
 }
