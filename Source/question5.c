@@ -8,9 +8,10 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 
+#define BUFFER_SIZE 256
 
 typedef struct{
-	char name[256];
+	char name[BUFFER_SIZE];
 	int priority;
 	int pid;
 	int runtime;
@@ -110,61 +111,77 @@ void print_list(){
     node_t * current = head;	
 	while (current != NULL) {
 		proc * new_process = current->process;
-        printf("%s,%d,%d,%d\n", new_process->name, new_process->priority, new_process->pid, new_process->runtime);
+        printf("%s,%d,%d,%d\n", new_process->name, 
+			new_process->priority, new_process->pid, new_process->runtime);
         current = current->next;
     }
 }
 
 int main(void)
-{
-	
+{ 
+	//Open file for reading
+	char filename[] = "processes_q5.txt";
+	FILE *in_file = fopen(filename, "r");
+	if(in_file == NULL){
+		fprintf(stderr, "Unable to open file '%s'.\n", filename);
+		return 1;
+	}
+	//Read file into queue
+	char buffer[BUFFER_SIZE];
+	while(fgets(buffer, BUFFER_SIZE, in_file) != NULL)
+	{
+		char *name = strtok(buffer, ",");
+		char *priority = strtok(NULL, ",");
+		char *runtime = strtok(NULL, ",");
+		
+		proc *new_process = NULL;
+		new_process = malloc(sizeof(proc));
+		strcpy(new_process->name, name);
+		new_process->priority = atoi(priority);
+		new_process->pid = 0;
+		new_process->runtime = atoi(runtime);
+		push(new_process);
+	}
+	fclose(in_file);
 
-    const char *filename = "processes.txt";
-    FILE *input_file = fopen( filename, "r" );
+	//Execute processes with priority 0
+	node_t * current_n = head;
+	while(current_n != NULL){	
+		if(current_n->process->priority == 0){
+			proc *current_p = delete_name(current_n->process->name);
+			pid_t pid = fork();
+			if(pid == 0) {
+				current_p->pid = execl(current_p->name, 0);
+				return 0;
+			}
+			sleep(current_p->runtime);
+			kill(pid, SIGINT);
+			waitpid(pid, NULL, 0);
+			printf("%s, %d, %d, %d\n", current_p->name, 
+				current_p->priority, current_p->pid, current_p->runtime);
+			free(current_p);
+		}
+		
+		current_n = current_n->next;
+	}
 
-    if( input_file == NULL ){
-
-        fprintf( stderr, "Unable to open file %s\n", filename );
-
-    }else{
-
-        // Read each line into the buffer
-        char  line[255];
-
-	    while (fgets(line, sizeof(line), input_file) != NULL)
-	    {
-	        const char* val1 = strtok(line, ",");
-	        const char* val2 = strtok(NULL, ",");
-	        const char* val3 = strtok(NULL, ",");
-	        const char* val4 = strtok(NULL, ",");
-
-	        proc *new_process = NULL;
-	        new_process = malloc(sizeof(proc));
-	        strcpy(new_process->name,val1);
-	        new_process->priority = atoi(val2);
-	        new_process->pid = atoi(val3);
-	        new_process->runtime = atoi(val4);
-
-	        push(new_process);
-	    }
-
-        if( ferror(input_file) ){
-            perror( "The following error occurred" );
-        }
-
-        fclose( input_file );
-
-    }
-
-    delete_name("emacs");
-    delete_pid(12235);
-
-    node_t * current = head;	
-	while (current != NULL) {
-		proc * new_process = pop();
-        printf("%s,%d,%d,%d\n", new_process->name, new_process->priority, new_process->pid, new_process->runtime);
-        current = current->next;
-    }
-
+	//Execute all other processes
+	current_n = head;
+	while(current_n != NULL){
+		proc *current_p = pop();
+		pid_t pid = fork();
+		if(pid == 0){
+			current_p->pid = execl(current_p->name, 0);
+			return 0;
+		}
+		sleep(current_p->runtime);
+		kill(pid, SIGINT);
+		waitpid(pid, NULL, 0);
+		printf("%s, %d, %d, %d\n", current_p->name, 
+			current_p->priority, current_p->pid, current_p->runtime);
+		free(current_p);
+		current_n = current_n->next;
+	}
 	free(head);
+	return 0;
 }
