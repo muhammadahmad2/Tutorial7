@@ -151,9 +151,10 @@ int main(void)
 			proc *current_p = delete_name(current_n->process->name);
 			pid_t pid = fork();
 			if(pid == 0) {
-				current_p->pid = execl(current_p->name, 0);
+				execl(current_p->name, 0);
 				return 0;
 			}
+			current_p->pid = (int) pid;
 			sleep(current_p->runtime);
 			kill(pid, SIGINT);
 			waitpid(pid, NULL, 0);
@@ -171,9 +172,10 @@ int main(void)
 		proc *current_p = pop();
 		pid_t pid = fork();
 		if(pid == 0){
-			current_p->pid = execl(current_p->name, 0);
+			execl(current_p->name, 0);
 			return 0;
 		}
+		current_p->pid = (int) pid;
 		sleep(current_p->runtime);
 		kill(pid, SIGINT);
 		waitpid(pid, NULL, 0);
