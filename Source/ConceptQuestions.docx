@@ -27,8 +27,13 @@ struct LinkedList {
 To add nodes to the list: 
 Given ListNode *node:
 Set node->next to null
-Set *tail->next to node
-Set tail to node
+Create ListNode *iter
+Iter = *head
+while *iter->next is not null
+	iter = *iter->next
+Set *iter->next to node
+Set iter to null
+free(iter)
 	To remove first node in the list:
 		Create ListNode *firstNode
 		Set firstNode->next to null
